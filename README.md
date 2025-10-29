@@ -15,4 +15,6 @@ Note that the Docker image uses pip rather than conda for package management. Th
 
 Once you have the housing server running in Docker, you can test it out by running `python test_rest_api.py` which will invoke the prediction endpoint for each entry of `data/future_unseen_examples.csv`.
 
-We also have a model evaluation script you can run to get an idea of model fit and variance: `python evaluate_model.py`
+We also have a model evaluation script you can run to get an idea of model fit and variance: `python evaluate_model.py` whose output has been saved to `evaluate_model_output.txt`
+
+We've added a script to test an updated XGBoost model `create_model_improved.py`. We output Shapley values for the model under `shap_feature_importance.csv`. These indicate rather intuitively that sqft_living has high predictive value for the housing price. The results may be used for further model adjustments such as recursive feature elimination.
