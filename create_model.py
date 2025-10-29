@@ -10,6 +10,7 @@ from sklearn import neighbors
 from sklearn import pipeline
 from sklearn import preprocessing
 
+RANDOM_SEED = 42
 SALES_PATH = "data/kc_house_data.csv"  # path to CSV with home sale data
 DEMOGRAPHICS_PATH = "data/zipcode_demographics.csv"  # path to CSV with demographics
 # List of columns (subset) that will be taken from home sale data
@@ -40,7 +41,7 @@ def load_data(
     data = pandas.read_csv(sales_path,
                            usecols=sales_column_selection,
                            dtype={'zipcode': str})
-    demographics = pandas.read_csv("data/zipcode_demographics.csv",
+    demographics = pandas.read_csv(demographics_path,
                                    dtype={'zipcode': str})
 
     merged_data = data.merge(demographics, how="left",
@@ -56,7 +57,7 @@ def main():
     """Load data, train model, and export artifacts."""
     x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
     x_train, _x_test, y_train, _y_test = model_selection.train_test_split(
-        x, y, random_state=42)
+        x, y, random_state=RANDOM_SEED)
 
     model = pipeline.make_pipeline(preprocessing.RobustScaler(),
                                    neighbors.KNeighborsRegressor()).fit(
