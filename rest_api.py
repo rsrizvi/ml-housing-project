@@ -14,6 +14,8 @@ from pydantic import BaseModel
 MODEL_PATH = pathlib.Path("model/model.pkl")
 FEATURES_PATH = pathlib.Path("model/model_features.json")
 DEMOGRAPHICS_PATH = "data/zipcode_demographics.csv"
+# Assume the CI/CD will set the container tag based on semantic versioning
+CONTAINER_TAG = os.getenv("CONTAINER_TAG", "latest")
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +75,7 @@ def predict(home: HomeInput) -> Dict:
             "metadata": {
                 "input": home.dict(),
                 "timestamp": datetime.now().isoformat(),
-                "model_version": "v1"  # TODO fix this
+                "container_tag": CONTAINER_TAG
             }
         }
 

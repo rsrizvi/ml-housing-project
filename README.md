@@ -1,3 +1,5 @@
+A containerized REST API inference server deployment to predict house price from numeric inputs.
+
 The local development env is presumed to use conda. You can install a minimal version of conda with miniconda [here](https://www.anaconda.com/docs/getting-started/miniconda/install). You can activate the `housing` env with conda by running 
 ```sh
 conda env create -f conda_environment.yml
