@@ -1,4 +1,4 @@
-A containerized REST API inference server deployment to predict house price from numeric inputs.
+A containerized model inference server deployment to predict house price from numeric inputs.
 
 The local development env is presumed to use conda. You can install a minimal version of conda with miniconda [here](https://www.anaconda.com/docs/getting-started/miniconda/install). You can activate the `housing` env with conda by running 
 ```sh
@@ -17,8 +17,15 @@ Note that the Docker image uses pip rather than conda for package management. Th
 
 Once you have the housing server running in Docker, you can test it out by running `python test_rest_api.py` which will invoke the prediction endpoint for each entry of `data/future_unseen_examples.csv`.
 
-We also have a model evaluation script you can run to get an idea of model fit and variance: `python evaluate_model.py` whose output has been saved to `evaluate_model_output.txt`
+We also have a model evaluation script you can run to get an idea of model fit and variance: `python evaluate_model.py` whose output has been saved to `evaluate_model_output.txt`.
 
 We've added a script to test an updated XGBoost model `create_model_improved.py`. We output Shapley values for the model under `shap_feature_importance.csv`. These indicate rather intuitively that sqft_living has high predictive value for the housing price. The results may be used for further model adjustments such as recursive feature elimination.
 
-This code is meant to be extended into a Kubernetes deployment for any real world usage. That entails autoscaling of model server containers based on configured pod metrics such as CPU usage and queue depth. Kubernetes can spin up a gateway for accepting external traffic, validating, and forwarding load balanced requests to the containers. Models are bundled with the server image in this implementation, so any model updates only require Kubernetes to perform a rolling restart of the deployed containers, versus the server dispatching to a model server or keeping manual track of externally updated models.
+For closer real world demonstration we also implement a deployable lightweight local NGINX reverse proxy setup, routing traffic to two backend server containers, configured via `docker-compose.yml` and `nginx.conf`. To run this locally:
+```sh
+docker-compose up -d
+docker-compose ps
+```
+You can run `python test_rest_api.py` the same as before with this deployment. To view the logs for the various services we spun up, you can run `docker-compose logs -f [nginx/app1/app2]`. To tear down the deployment, run `docker-compose down`.
+
+This code is meant to be extended into a Kubernetes deployment for any real world usage. That entails autoscaling of model server containers based on configured pod metrics such as CPU usage and queue depth. Kubernetes can spin up an NGINX Ingress gateway for accepting external traffic, validating, and forwarding requests to the containers through a configured load balancer. Models are bundled with the server image in this implementation, so any model updates only require a rolling restart of the deployed containers which Kubernetes can handle, versus the application server itself dispatching to a model server to fetch the latest model, or keeping manual track of whether a loaded model is stale relative to an external source.
